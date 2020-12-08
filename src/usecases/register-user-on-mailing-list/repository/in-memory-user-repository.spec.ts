@@ -6,6 +6,7 @@ describe('In memory User Repository', () => {
     const users: UserData[] = []
     const userRepo = new InMemoryUserRepository(users)
     const user = await userRepo.findUserByEmail('any@mail.com')
+
     expect(user).toBeNull()
   })
 
@@ -14,8 +15,23 @@ describe('In memory User Repository', () => {
     const name = 'any_name'
     const email = 'any@mail.com'
     const userRepo = new InMemoryUserRepository(users)
+
     await userRepo.add({ name, email })
+
     const user = await userRepo.findUserByEmail('any@mail.com')
+
     expect(user.name).toBe('any_name')
+  })
+
+  test('should return all users in the respository', async () => {
+    const users: UserData[] = [
+      { name: 'any_name', email: 'any@mail.com' },
+      { name: 'second_name', email: 'second@mail.com' }
+    ]
+
+    const userRepo = new InMemoryUserRepository(users)
+    const returnedUsers = await userRepo.findAllUsers()
+
+    expect(returnedUsers.length).toBe(2)
   })
 })
