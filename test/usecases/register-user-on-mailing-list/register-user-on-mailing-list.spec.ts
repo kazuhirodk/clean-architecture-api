@@ -1,9 +1,6 @@
-import { InvalidEmailError } from '../../entities/errors/invalid-email-error'
-import { InvalidNameError } from '../../entities/errors/invalid-name-error'
-import { UserData } from '../../entities/user-data'
-import { left } from '../../shared/either'
-import { UserRepository } from './ports/user-repository'
-import { RegisterUserOnMailingList } from './register-user-on-mailing-list'
+import { UserData } from '../../../src/entities/user-data'
+import { UserRepository } from '../../../src/usecases/register-user-on-mailing-list/ports/user-repository'
+import { RegisterUserOnMailingList } from '../../../src/usecases/register-user-on-mailing-list/register-user-on-mailing-list'
 import { InMemoryUserRepository } from './repository/in-memory-user-repository'
 
 describe('Register user on mailing list use case', () => {
@@ -26,11 +23,11 @@ describe('Register user on mailing list use case', () => {
     const usecase: RegisterUserOnMailingList = new RegisterUserOnMailingList(repo)
     const name: string = 'any_name'
     const invalidEmail: string = 'invalid_email'
-    const response = await usecase.perform({ name, email: invalidEmail })
+    const response = (await usecase.perform({ name, email: invalidEmail })).value as Error
     const user = await repo.findUserByEmail(invalidEmail)
 
     expect(user).toBeNull()
-    expect(response).toEqual(left(new InvalidEmailError()))
+    expect(response.name).toEqual('InvalidEmailError')
   })
 
   test('should not add user with invalid name to mailing list', async () => {
@@ -39,10 +36,10 @@ describe('Register user on mailing list use case', () => {
     const usecase: RegisterUserOnMailingList = new RegisterUserOnMailingList(repo)
     const invalidName: string = ''
     const email: string = 'any@email.com'
-    const response = await usecase.perform({ name: invalidName, email })
+    const response = (await usecase.perform({ name: invalidName, email })).value as Error
     const user = await repo.findUserByEmail(email)
 
     expect(user).toBeNull()
-    expect(response).toEqual(left(new InvalidNameError()))
+    expect(response.name).toEqual('InvalidNameError')
   })
 })
