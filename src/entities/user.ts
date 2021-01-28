@@ -1,6 +1,6 @@
-import { Email, Name, UserData } from './'
-import { Either, left, right } from '../shared'
-import { InvalidEmailError, InvalidNameError } from './errors'
+import { Email, Name, UserData } from '@/entities'
+import { Either, left, right } from '@/shared'
+import { InvalidEmailError, InvalidNameError } from '@/entities/errors'
 
 export class User {
   public readonly email: Email
